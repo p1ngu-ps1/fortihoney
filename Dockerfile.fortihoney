@@ -4,7 +4,7 @@ FROM golang:1.21-alpine AS builder
 RUN apk add --no-cache git build-base sqlite-dev
 
 # Install Buffalo CLI
-RUN go install github.com/gobuffalo/buffalo/v2/cmd/buffalo@latest
+RUN go install github.com/gobuffalo/cli/cmd/buffalo@latest
 
 WORKDIR /app
 COPY fortihoney/go.mod fortihoney/go.sum ./
