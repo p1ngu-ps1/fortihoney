@@ -1,6 +1,6 @@
 module fortihoney
 
-go 1.18
+go 1.21
 
 require (
 	github.com/gobuffalo/buffalo v1.1.0
@@ -12,7 +12,6 @@ require (
 	github.com/gobuffalo/suite/v4 v4.0.4
 	github.com/gobuffalo/validate/v3 v3.3.3
 	github.com/gofrs/uuid v4.4.0+incompatible
-	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/unrolled/secure v1.14.0
 )
 
@@ -69,7 +68,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/monoculum/formam v3.5.5+incompatible // indirect
 	github.com/nicksnyder/go-i18n v1.10.3 // indirect
-	github.com/oschwald/maxminddb-golang v1.12.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

@@ -20,7 +20,7 @@ RUN apk add --no-cache ca-certificates sqlite
 WORKDIR /app/
 COPY --from=builder /app/fortihoney-bin .
 COPY fortihoney/database.yml .
-COPY fortihoney/files/ ./files/
+# COPY fortihoney/files/ ./files/ # No longer needed - using ip-api.com instead of local GeoIP database
 
 # Default port for FortiGate SSL VPN
 EXPOSE 443

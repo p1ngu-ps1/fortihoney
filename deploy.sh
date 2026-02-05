@@ -28,11 +28,9 @@ if [ ! -f "certs/fortihoney.crt" ]; then
       -subj "/C=US/ST=California/L=Sunnyvale/O=Fortinet/OU=FortiGate/CN=FortiGate-Firewall"
 fi
 
-# 4. GeoIP Check
-if [ ! -f "fortihoney/files/GeoLite2-City.mmdb" ]; then
-    echo -e "${RED}[!] WARNING: GeoLite2-City.mmdb not found!${NC}"
-    echo "[*] Attacks will not be geolocated in logs."
-fi
+# 4. GeoIP Configuration
+# Note: FortiHoney uses ip-api.com for geolocation (no local database required)
+# The free tier allows 45 requests/minute, which is sufficient for honeypot usage
 
 # 5. Kernel Tuning (Required for Wazuh)
 echo "[+] Tuning kernel parameters (vm.max_map_count)..."
