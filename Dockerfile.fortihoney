@@ -1,0 +1,28 @@
+# Build stage
+FROM golang:1.21-alpine AS builder
+
+RUN apk add --no-cache git build-base sqlite-dev
+
+# Install Buffalo CLI
+RUN go install github.com/gobuffalo/buffalo/v2/cmd/buffalo@latest
+
+WORKDIR /app
+COPY fortihoney/go.mod fortihoney/go.sum ./
+RUN go mod download
+
+COPY fortihoney/ .
+# Pre-build to pack files
+RUN buffalo build --static -o /app/fortihoney-bin
+
+# Final stage
+FROM alpine:latest
+RUN apk add --no-cache ca-certificates sqlite
+WORKDIR /app/
+COPY --from=builder /app/fortihoney-bin .
+COPY fortihoney/database.yml .
+COPY fortihoney/files/ ./files/
+
+# Default port for FortiGate SSL VPN
+EXPOSE 443
+
+CMD ["./fortihoney-bin"]

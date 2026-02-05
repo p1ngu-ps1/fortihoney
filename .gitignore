@@ -1,0 +1,20 @@
+# Databases
+*.sqlite
+data/
+
+# Logs
+logs/
+*.log
+*.json
+
+# MaxMind DB
+*.mmdb
+
+# OS specific
+.DS_Store
+.env
+
+# Go
+bin/
+dist/
+vendor/
