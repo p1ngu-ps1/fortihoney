@@ -9,4 +9,4 @@ test:
 
 production:
   dialect: "sqlite3"
-  database: ./fortihoney_fortihoney_production.sqlite
+  database: /app/database/fortihoney_fortihoney_production.sqlite
