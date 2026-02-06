@@ -30,8 +30,10 @@ services:
 
   wazuh-indexer:
     image: wazuh/wazuh-indexer:4.7.2
+    hostname: wazuh.indexer
     environment:
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
+      - "discovery.type=single-node"
     ulimits:
       memlock:
         soft: -1
@@ -63,8 +65,12 @@ services:
       - "8443:5601"
     environment:
       - WAZUH_MANAGER=wazuh-manager
+      - OPENSEARCH_HOSTS='["https://wazuh.indexer:9200"]'
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=5601
     depends_on:
       - wazuh-manager
+      - wazuh-indexer
     networks:
       - honeynet
     restart: always
