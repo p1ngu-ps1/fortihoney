@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=8; IE=EDGE">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-itunes-app" content="app-id=1475674905">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon/favicon.ico" />
-    <link rel="shortcut icon" href="/favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
-    <link rel="manifest" href="/favicon/site.webmanifest" />
-    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#d43527" />
-    <link href="/styles.css" rel="stylesheet" type="text/css">
-    <link href="/css/legacy-main.css" rel="stylesheet" type="text/css">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" />
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}" />
+    <link rel="mask-icon" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" color="#d43527" />
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='css/legacy-main.css') }}" rel="stylesheet" type="text/css">
 </head>
 
 <body>
@@ -27,16 +27,16 @@
                 </div>
                 <div class="sub-content">
                     <div class="wide-inputs">
-                        <%= if (flash["error"] !=nil) { %>
+                        {% if error %}
                             <div class="error-message" id="err_str">
                                 <div class="message-content" id="err_val" title="sslvpn_login_permission_denied">
-                                    <%= flash["error"] %>
+                                    {{ error }}
                                 </div>
                             </div>
-                            <% } %>
+                        {% endif %}
 
                                 <!--remoteauthtimeout=10-->
-                                <form method="post" action="<%= loginViewPath() %>">
+                                <form method="post" action="/remote/logincheck">
                                     <input type="text" name="username" id="username" placeholder="Username" required>
                                     <input
                                         type="password" name="credential" id="credential" placeholder="Password"
@@ -89,8 +89,8 @@
     value="0"><input type=hidden name=grpid id=grpid_id value=""><input type=hidden name=realm id=realm_id
     value=""><input type=hidden name=redir value="/sslvpn/portal.html"><input type=hidden name=saml_login
     id=saml_login_id value="0">
-<script type="text/javascript" src="/js/legacy_theme_setup.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/legacy_theme_setup.js') }}"></script>
 <script type="text/javascript" src="/remote/fgt_lang?lang=en"></script>
-<script>document.onkeydown = key_pressdown; function load_login_strings() { var tmp = document.getElementById("err_val"); var name = document.getElementById("username"); var pass = document.getElementById("credential"); if (tmp) { tmp.innerHTML = fgt_lang["error"] + ": " + fgt_lang[tmp.getAttribute('title')]; } name.placeholder = fgt_lang["Username"]; pass.placeholder = fgt_lang["sslvpn_portal::Password"]; } window.onload = load_login_strings;</script>
+<script>document.onkeydown = key_pressdown; function load_login_strings() { var tmp = document.getElementById("err_val"); var name = document.getElementById("username"); var pass = document.getElementById("credential"); if (tmp) { tmp.textContent = fgt_lang["error"] + ": " + fgt_lang[tmp.getAttribute('title')]; } name.placeholder = fgt_lang["Username"]; pass.placeholder = fgt_lang["sslvpn_portal::Password"]; } window.onload = load_login_strings;</script>
 
 </html>

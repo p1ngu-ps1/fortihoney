@@ -1,0 +1,21 @@
+🍯 FortiHoney - Quick Start
+============================
+
+Two commands to start:
+
+    ./setup.sh
+    docker compose up -d
+
+View logs:
+
+    tail -f logs/fortihoney.json | jq
+
+Get API key:
+
+    cat .env | grep FORTIHONEY_API_KEY
+
+Access:
+
+    http://localhost:3000/remote/login
+
+See README.md for full documentation.

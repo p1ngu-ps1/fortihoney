@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  fortihoney:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fortihoney
+    restart: unless-stopped
+
+    # Security: Run as non-root user
+    user: "1000:1000"
+
+    # Security: Read-only root filesystem (except logs)
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=10m
+
+    # Resource limits (prevent DoS)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+    # Security capabilities (drop all, minimal privileges)
+    cap_drop:
+      - ALL
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment variables
+    environment:
+      - GO_ENV=production
+      - FORTIHONEY_API_KEY=${FORTIHONEY_API_KEY}
+
+    # Volumes (only what's needed)
+    volumes:
+      - ./logs:/app/logs:rw  # Log directory (writable)
+
+    # Network
+    networks:
+      - fortihoney_net
+
+    # Port (internal only - nginx will proxy)
+    expose:
+      - "3000"
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:3000/', timeout=2)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # Nginx reverse proxy (handles SSL)
+  nginx:
+    image: nginx:alpine
+    container_name: fortihoney-nginx
+    restart: unless-stopped
+
+    ports:
+      - "443:443"
+      - "80:80"
+
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+
+    networks:
+      - fortihoney_net
+
+    depends_on:
+      - fortihoney
+
+    # Security
+    security_opt:
+      - no-new-privileges:true
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  fortihoney_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
