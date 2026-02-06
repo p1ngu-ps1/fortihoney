@@ -390,7 +390,7 @@ def login_check():
         'form_data': {k: v[:128] for k, v in request.form.items() if k not in ['credential']}
     })
 
-    response = make_response(redirect('/remote/login', code=307))
+    response = make_response(redirect('/remote/login', code=303))
     response.set_cookie(
         'flash_error',
         'Error: Permission denied.',
