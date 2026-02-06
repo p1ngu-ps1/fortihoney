@@ -72,20 +72,17 @@ Automatically detects these CRITICAL CVEs:
 - ✅ GeoIP data (country, ASN)
 - ✅ Suspicious request flagging
 
-### 5. Hacker-Style Admin Panel
+### 5. Hacker-Style Logs Viewer
 **Features:**
 - 🎨 Matrix rain effect background
 - 🎮 Crack tool / hacker aesthetic (black/green/red terminal style)
 - 📊 Real-time statistics (total events, logins, CVEs, suspicious)
 - 📜 Live log viewer with auto-refresh
 - 🔴 CVE attempt highlighting (blinking red badges)
-- 🌍 Top attacking IPs & countries
-- 📈 Event type breakdown
-- 🎯 CVE attempts tracker
 - 🔄 Auto-refresh toggle (5-second intervals)
 - 🔍 Event type filtering
 - 📋 Log limit selection (50/100/200/500)
-- 🔑 API key display with copy button
+- ✅ No authentication required (static page)
 
 ### 6. Security Enhancements
 - ✅ Rate limiting (20 req/min per IP)
@@ -116,29 +113,15 @@ Automatically detects these CRITICAL CVEs:
 **templates/login.html:** 6.5KB
 - Original FortiGate UI (unchanged)
 
-## 🎮 How to Access Admin Panel
+## 🎮 How to Access Logs Viewer
 
-### Option 1: Browser Extension (Easiest)
-1. Install [ModHeader](https://modheader.com/) extension
-2. Add request header:
-   - Name: `Authorization`
-   - Value: `Bearer YOUR_API_KEY`
-3. Visit: `https://YOUR_SERVER_IP/admin/panel`
+Simply visit in your browser:
 
-### Option 2: Curl
-```bash
-curl -H "Authorization: Bearer YOUR_API_KEY" \
-  https://YOUR_SERVER_IP/admin/panel
+```
+https://YOUR_SERVER_IP/logs
 ```
 
-### Option 3: JavaScript
-```javascript
-fetch('https://YOUR_SERVER_IP/admin/panel', {
-    headers: {
-        'Authorization': 'Bearer YOUR_API_KEY'
-    }
-}).then(r => r.text()).then(html => document.write(html));
-```
+No authentication required - just open the page and view your logs in style.
 
 ## 📝 Log Format Examples
 
@@ -208,8 +191,8 @@ curl http://localhost:3000/admin/config.php
 # Check logs
 tail -f logs/fortihoney.json | jq
 
-# View in admin panel
-# Visit: https://localhost/admin/panel (with API key header)
+# View in logs viewer
+# Visit: https://localhost/logs
 ```
 
 ## 📈 Comparison: Before vs After
@@ -219,7 +202,7 @@ tail -f logs/fortihoney.json | jq
 | **FortiGate Paths** | 3 paths | 15+ paths |
 | **CVE Detection** | ❌ None | ✅ 5 CVEs |
 | **Logging** | Login only | ALL requests |
-| **Admin Panel** | ❌ None | ✅ Hacker style |
+| **Logs Viewer** | ❌ None | ✅ Hacker style |
 | **Request Bodies** | ❌ No | ✅ Yes |
 | **Headers Logged** | ❌ Minimal | ✅ Full |
 | **CVE Flagging** | ❌ No | ✅ Auto-detect |
@@ -276,7 +259,7 @@ cd fortihoney-flask
 docker compose up -d
 ```
 
-Access admin panel: `https://YOUR_IP/admin/panel`
+Access logs viewer: `https://YOUR_IP/logs`
 
 ---
 

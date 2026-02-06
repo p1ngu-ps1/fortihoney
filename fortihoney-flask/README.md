@@ -27,32 +27,23 @@ Automatically detects these critical CVEs:
 - **CVE-2023-27997** - XORtigate (RCE)
 - **CVE-2024-21762** - Out-of-bounds write (RCE)
 
-## 🎮 Admin Panel (Hacker Style)
+## 🎮 Logs Viewer (Hacker Style)
 
-Access the web panel to view logs in style:
+Access the static logs viewer to view logs in style:
 
 ```
-https://YOUR_SERVER_IP/admin/panel
+https://YOUR_SERVER_IP/logs
 ```
 
-**Authentication:** Use your API key in browser
-- Add extension: [ModHeader](https://modheader.com/)
-- Set header: `Authorization: Bearer YOUR_API_KEY`
-
-Or access directly in code:
-```javascript
-fetch('https://YOUR_SERVER_IP/admin/panel', {
-    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
-})
-```
+**No authentication required** - simple static page with hacker aesthetic.
 
 **Features:**
 - Matrix rain effect background
 - Real-time log viewer with auto-refresh
 - CVE attempt highlighting
-- Top attacking IPs & countries
-- Event type statistics
-- Hacker/crack tool aesthetic (black/green terminal style)
+- Event statistics (login attempts, CVE attempts, suspicious)
+- Filter by event type
+- Hacker/crack tool aesthetic (black/green/red terminal style)
 
 ## 🔑 Get Your API Key
 
@@ -62,9 +53,9 @@ cat .env | grep FORTIHONEY_API_KEY
 
 ## 📊 View Logs
 
-**Web Panel (Recommended):**
+**Web Viewer (Recommended):**
 ```
-https://YOUR_SERVER_IP/admin/panel
+https://YOUR_SERVER_IP/logs
 ```
 
 **Command Line:**

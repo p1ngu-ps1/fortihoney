@@ -529,14 +529,33 @@ def robots():
     return send_from_directory('static', 'robots.txt')
 
 # ============================================================================
-# ROUTES: ADMIN WEB PANEL (HACKER STYLE)
+# ROUTES: STATIC LOGS VIEWER (HACKER STYLE)
 # ============================================================================
 
-@app.route('/admin/panel', methods=['GET'])
-@require_api_key
-def admin_panel():
-    """Admin panel for viewing logs (hacker aesthetic)."""
-    return render_template('admin_panel.html', api_key=API_SECRET_KEY)
+@app.route('/logs', methods=['GET'])
+def logs_viewer():
+    """Static page for viewing logs (hacker aesthetic)."""
+    return render_template('logs_viewer.html')
+
+@app.route('/api/logs/data', methods=['GET'])
+def logs_data():
+    """Serve raw JSON log data for the static viewer (no auth required)."""
+    try:
+        if not os.path.exists(LOG_FILE):
+            return jsonify([])
+
+        logs = []
+        with open(LOG_FILE, 'r') as f:
+            for line in f:
+                try:
+                    logs.append(json.loads(line.strip()))
+                except:
+                    continue
+
+        # Return last 500 logs (newest first)
+        return jsonify(list(reversed(logs[-500:])))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # ============================================================================
 # ROUTES: SECURE API (for log retrieval)

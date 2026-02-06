@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FortiHoney Logs | H4CK3R M0D3</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+        }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #00ff00;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+        }
+
+        .header .subtitle {
+            color: #ff0000;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #00ff00;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button, select {
+            background: #000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover, select:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .logs-panel {
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            min-height: 400px;
+        }
+
+        .panel-header {
+            font-size: 20px;
+            color: #ff0000;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 10px;
+        }
+
+        .log-entry {
+            background: #000;
+            border-left: 3px solid #00ff00;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            transition: all 0.3s;
+            border-radius: 3px;
+        }
+
+        .log-entry:hover {
+            border-left-color: #ff0000;
+            background: #0a0a0a;
+            transform: translateX(5px);
+        }
+
+        .log-entry.suspicious {
+            border-left-color: #ff0000;
+            background: #1a0000;
+        }
+
+        .log-entry.cve-attempt {
+            border-left-color: #ff00ff;
+            background: #1a001a;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .log-ip {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .log-country {
+            color: #ffff00;
+            margin-left: 10px;
+        }
+
+        .log-event {
+            color: #ff0000;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .log-path {
+            color: #00ff00;
+        }
+
+        .cve-badge {
+            display: inline-block;
+            background: #ff0000;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            margin-left: 10px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.5; }
+        }
+
+        .loading {
+            text-align: center;
+            color: #00ff00;
+            font-size: 18px;
+            padding: 40px;
+            animation: flicker 1s infinite;
+        }
+
+        .error {
+            text-align: center;
+            color: #ff0000;
+            font-size: 18px;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="container">
+        <div class="header">
+            <h1>🍯 FORTIHONEY LOGS 🍯</h1>
+            <div class="subtitle">⚠️ SYSTEM MONITORING ACTIVE ⚠️</div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value" id="total-logs">-</div>
+                <div class="stat-label">Total Events</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="login-attempts">-</div>
+                <div class="stat-label">Login Attempts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="cve-attempts">-</div>
+                <div class="stat-label">CVE Attempts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="suspicious-count">-</div>
+                <div class="stat-label">Suspicious</div>
+            </div>
+        </div>
+
+        <div class="logs-panel">
+            <div class="panel-header">⚡ REAL-TIME LOGS ⚡</div>
+
+            <div class="controls">
+                <button onclick="loadLogs()">↻ REFRESH</button>
+                <button onclick="toggleAutoRefresh()">⏱ AUTO-REFRESH: <span id="auto-status">OFF</span></button>
+                <select id="event-filter" onchange="applyFilters()">
+                    <option value="">ALL EVENTS</option>
+                    <option value="login_attempt">LOGIN ATTEMPTS</option>
+                    <option value="cve">CVE ATTEMPTS</option>
+                    <option value="path_probe">PATH PROBES</option>
+                    <option value="suspicious">SUSPICIOUS ONLY</option>
+                </select>
+                <select id="log-limit" onchange="applyFilters()">
+                    <option value="50">50 LOGS</option>
+                    <option value="100" selected>100 LOGS</option>
+                    <option value="200">200 LOGS</option>
+                    <option value="500">500 LOGS</option>
+                </select>
+            </div>
+
+            <div id="logs-container">
+                <div class="loading">⏳ LOADING LOGS...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allLogs = [];
+        let autoRefreshInterval = null;
+        let autoRefreshEnabled = false;
+
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 50);
+
+        async function loadLogs() {
+            try {
+                const response = await fetch('/api/logs/data');
+                allLogs = await response.json();
+
+                if (allLogs.error) {
+                    document.getElementById('logs-container').innerHTML =
+                        '<div class="error">ERROR LOADING LOGS: ' + allLogs.error + '</div>';
+                    return;
+                }
+
+                updateStats();
+                applyFilters();
+            } catch (error) {
+                document.getElementById('logs-container').innerHTML =
+                    '<div class="error">ERROR LOADING LOGS: ' + error.message + '</div>';
+            }
+        }
+
+        function updateStats() {
+            const totalLogs = allLogs.length;
+            const loginAttempts = allLogs.filter(log => log.event_type === 'login_attempt').length;
+            const cveAttempts = allLogs.filter(log => log.cve_attempts && log.cve_attempts.length > 0).length;
+            const suspicious = allLogs.filter(log => log.suspicious).length;
+
+            document.getElementById('total-logs').textContent = totalLogs;
+            document.getElementById('login-attempts').textContent = loginAttempts;
+            document.getElementById('cve-attempts').textContent = cveAttempts;
+            document.getElementById('suspicious-count').textContent = suspicious;
+        }
+
+        function applyFilters() {
+            const eventFilter = document.getElementById('event-filter').value;
+            const limit = parseInt(document.getElementById('log-limit').value);
+
+            let filteredLogs = allLogs;
+
+            if (eventFilter === 'login_attempt') {
+                filteredLogs = filteredLogs.filter(log => log.event_type === 'login_attempt');
+            } else if (eventFilter === 'cve') {
+                filteredLogs = filteredLogs.filter(log => log.cve_attempts && log.cve_attempts.length > 0);
+            } else if (eventFilter === 'path_probe') {
+                filteredLogs = filteredLogs.filter(log => log.event_type === 'path_probe');
+            } else if (eventFilter === 'suspicious') {
+                filteredLogs = filteredLogs.filter(log => log.suspicious);
+            }
+
+            filteredLogs = filteredLogs.slice(0, limit);
+
+            displayLogs(filteredLogs);
+        }
+
+        function displayLogs(logs) {
+            if (logs.length === 0) {
+                document.getElementById('logs-container').innerHTML =
+                    '<div class="loading">NO LOGS FOUND</div>';
+                return;
+            }
+
+            const logsHtml = logs.map(log => {
+                const time = new Date(log.timestamp).toLocaleString();
+                const isSuspicious = log.suspicious ? ' suspicious' : '';
+                const hasCve = log.cve_attempts && log.cve_attempts.length > 0;
+                const cveClass = hasCve ? ' cve-attempt' : '';
+
+                let cvesBadges = '';
+                if (hasCve) {
+                    cvesBadges = log.cve_attempts.map(cve =>
+                        '<span class="cve-badge">' + cve.cve_id + '</span>'
+                    ).join('');
+                }
+
+                return '<div class="log-entry' + isSuspicious + cveClass + '">' +
+                    '<span class="log-time">' + time + '</span>' +
+                    '<span class="log-event">[' + log.event_type.toUpperCase() + ']</span>' +
+                    '<span class="log-ip">' + (log.ip || 'Unknown') + '</span>' +
+                    '<span class="log-country">' + (log.country || '--') + '</span>' +
+                    '<span class="log-path">' + (log.method || 'GET') + ' ' + (log.path || '/') + '</span>' +
+                    cvesBadges +
+                    (log.username ? '<br><span style="color: #ff00ff">→ User: ' + log.username + '</span>' : '') +
+                    (log.password ? '<span style="color: #ff00ff"> | Pass: ' + log.password + '</span>' : '') +
+                    (log.query_string ? '<br><span style="color: #ffff00">→ Query: ' + log.query_string + '</span>' : '') +
+                    (log.attempted_path ? '<br><span style="color: #ff8800">→ Attempted: ' + log.attempted_path + '</span>' : '') +
+                    '</div>';
+            }).join('');
+
+            document.getElementById('logs-container').innerHTML = logsHtml;
+        }
+
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const statusEl = document.getElementById('auto-status');
+
+            if (autoRefreshEnabled) {
+                statusEl.textContent = 'ON';
+                statusEl.style.color = '#00ff00';
+                autoRefreshInterval = setInterval(loadLogs, 5000);
+            } else {
+                statusEl.textContent = 'OFF';
+                statusEl.style.color = '#ff0000';
+                if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            }
+        }
+
+        loadLogs();
+    </script>
+</body>
+</html>
